@@ -1,8 +1,6 @@
 import os
 import sys
-import ctypes
-from ctypes import wintypes
-import win32con
+
 import time
 import threading
 import concurrent.futures
@@ -11,6 +9,10 @@ import subprocess
 
 #Implement Hotkey registration
 """
+import ctypes
+from ctypes import wintypes
+import win32con
+
 byref = ctypes.byref
 user32 = ctypes.windll.user32
 
