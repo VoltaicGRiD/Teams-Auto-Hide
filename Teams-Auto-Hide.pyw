@@ -1,24 +1,102 @@
 import os
 import sys
+import ctypes
+from ctypes import wintypes
+import win32con
 import time
 import threading
 import concurrent.futures
 import subprocess
 
+
+#Implement Hotkey registration
+"""
+byref = ctypes.byref
+user32 = ctypes.windll.user32
+
+Hotkeys = {
+    1 : (win32con.VK_P, win32con.MOD_CTRL)
+}
+
+def handle_cancel():
+    sys.exit('Process aborted by user')
+
+Hotkey_Actions = {
+    1 : handle_cancel
+}
+
+for id, (vk, modifiers) in HOTKEYS.items ():
+  print("Registering id " + str(id) + " for key " + str(vk))
+  if not user32.RegisterHotKey (None, id, modifiers, vk):
+    print("Unable to register id " + str(id))
+
+#
+# Home-grown Windows message loop: does
+#  just enough to handle the WM_HOTKEY
+#  messages and pass everything else along.
+#
+try:
+  msg = wintypes.MSG ()
+  while user32.GetMessageA (byref (msg), None, 0, 0) != 0:
+    if msg.message == win32con.WM_HOTKEY:
+      action_to_take = HOTKEY_ACTIONS.get (msg.wParam)
+      if action_to_take:
+        action_to_take ()
+
+    user32.TranslateMessage (byref (msg))
+    user32.DispatchMessageA (byref (msg))
+
+finally:
+  for id in HOTKEYS.keys ():
+    user32.UnregisterHotKey (None, id)
+"""
+
+
+#Import dependencies. If not already downloaded & installed, call subprocess 'pip install <module>' to install it
 try:
     import pyautogui
 except ImportError:
     subprocess.call('pip install pyautogui')
-    
-#Gather the necessary image files and assign them to the necessary variables
-directory, file = os.path.split(os.path.abspath(sys.argv[0]))
-directory = directory + '\\ImageMatches\\'
-recentPic = os.path.join(directory, 'Recent.png')
-hidePic = os.path.join(directory, 'HideButton.png')
-hidePic2 = os.path.join(directory, 'HideButton2.png')
-hidePic3 = os.path.join(directory, 'HideButton3.png')
-leavePic = os.path.join(directory, 'LeaveButton.png')
-leavePic2 = os.path.join(directory, 'LeaveButton2.png')
+    time.sleep(5)
+
+ver = None
+
+#Due to an issue with pulling pixels right after importing 'pyautogui', run a while loop to help mitigate the issue
+while ver is None:
+    try:
+        ver = pyautogui.pixel(80, 60)
+    except:
+        None    
+
+#Parse the MS Teams theme by comparing pixel colors
+if ver == (45, 44, 43):
+    ver = 'Dark'
+elif ver == (255, 255, 252):
+    ver = 'Light'
+else:
+    ver = 'INCORRECT STYLE'
+
+#Set picture comparison files based on theme
+if ver == 'Dark':
+    #Gather the necessary image files and assign them to the necessary variables
+    directory, file = os.path.split(os.path.abspath(sys.argv[0]))
+    directory = directory + '\\Dark-ImageMatches\\'
+    recentPic = os.path.join(directory, 'Recent.png')
+    hidePic = os.path.join(directory, 'HideButton.png')
+    hidePic2 = os.path.join(directory, 'HideButton2.png')
+    hidePic3 = os.path.join(directory, 'HideButton3.png')
+    leavePic = os.path.join(directory, 'LeaveButton.png')
+    leavePic2 = os.path.join(directory, 'LeaveButton2.png')    
+elif ver == 'Light':
+    #Gather the necessary image files and assign them to the necessary variables
+    directory, file = os.path.split(os.path.abspath(sys.argv[0]))
+    directory = directory + '\\Light-ImageMatches\\'
+    recentPic = os.path.join(directory, 'Recent.png')
+    hidePic = os.path.join(directory, 'HideButton.png')
+    hidePic2 = os.path.join(directory, 'HideButton2.png')
+    hidePic3 = os.path.join(directory, 'HideButton3.png')
+    leavePic = os.path.join(directory, 'LeaveButton.png')
+    leavePic2 = os.path.join(directory, 'LeaveButton2.png')
 
 #Non-discriminate function to remove all chats
 def clearAll(count):
@@ -36,7 +114,7 @@ def clearAll(count):
         count -= 1
 
 #Perform a search to see if the text color matches (255, 255, 252) (identifier for white text which means the chat is new)
-def isNew(firstx, firsty):
+def isNew(firstx, firsty, ver):
     l = []
     l.clear()
 
@@ -46,7 +124,10 @@ def isNew(firstx, firsty):
         repeat = False
         for x in range(0, 21):
             try:
-                l.append(pyautogui.pixelMatchesColor(firstx - 50, firsty + x, (255, 255, 252)))
+                if ver == 'Dark':
+                    l.append(pyautogui.pixelMatchesColor(firstx - 50, firsty + x, (255, 255, 252)))
+                elif ver == 'Light':
+                    l.append(pyautogui.pixelMatchesColor(firstx - 50, firsty + x, (37, 36, 34)))
             except:
                 repeat = True
                 break
@@ -130,7 +211,7 @@ def hide(firstx, firsty):
                   
         
 #Function to start the process for clearing all chats that are NOT new (incl. group chats)
-def clearNotNew(count):
+def clearNotNew(count, ver):
     while count > 0:
         #Find the location of the 'Recent' tag in MS Teams
         recentLoc = pyautogui.locateCenterOnScreen(recentPic)
@@ -143,7 +224,7 @@ def clearNotNew(count):
         repeat = True
     
         while repeat == True:
-            new = isNew(firstx, firsty)
+            new = isNew(firstx, firsty, ver)
             if new == False:
                 repeat = False
                 hide(firstx, firsty)
@@ -153,7 +234,7 @@ def clearNotNew(count):
 
         count -= 1
 
-def clearOldNotGroup(count):
+def clearOldNotGroup(count, ver):
     while count > 0:
         #Find the location of the 'Recent' tag in MS Teams
         recentLoc = pyautogui.locateCenterOnScreen(recentPic)
@@ -166,7 +247,7 @@ def clearOldNotGroup(count):
         repeat = True
     
         while repeat == True:
-            new = isNew(firstx, firsty)
+            new = isNew(firstx, firsty, ver)
             if new == False:
                 group = isGroup(firstx, firsty)
                 if group == False:
@@ -181,36 +262,35 @@ def clearOldNotGroup(count):
 
         count -= 1
 
-def start():
+def start(ver):
     #print('Press 1 to remove all chats, including new & group chats \nPress 2 to remove all non-new chats including groups \nPress 3 to remove all non-new & non-group chats')
     #_in = input()
 
-    _in = pyautogui.confirm('Please select an option below', 'Select', buttons=['Hide all', 'Hide read (singular & group chats)', 'Hide read (only singular chats)'])
+    _in = pyautogui.confirm('Please select an option below', 'Select', buttons=['Hide all chats', 'Hide all read (singular & group chats)', 'Hide all read (only singular chats)'])
     if _in is None:
         sys.exit('No input supplied, closing...')
         
     #print('\nHow many runs do you want to perform (a.k.a how many chats do you want to hide?)')
     #count = input()
 
-    count = pyautogui.prompt('How many conversations do you want the application to remove?\n\n\
-Note: the application will recognize numbers larger than 50, however it limits itself to only removing a max of 50 per instance.', 'Count', '1')
+    count = pyautogui.prompt('How many loops do you want the script to perform (i.e. how many chats to remove)', 'Count', '1')
     if count is None or int(count) < 1:
         sys.exit('Input is null or less than 1, closing...')
     elif int(count) > 50:
-        pyautogui.alert('The script will only loop 50 times for security purposes. Please re-run script if necessary.')
+        pyautogui.alert('The script will only loop 50 times for security reasons. Please re-run script if necessary.')
         count = 50
 
     print(str(_in))
     print(str(count))
     
-    if _in == 'Hide all':
+    if _in == 'Hide all chats':
         clearAll(int(count))
-    elif _in == 'Hide read (singular & group chats)':
-        clearNotNew(int(count))
-    elif _in == 'Hide read (only singular chats)':
-        clearOldNotGroup(int(count))
+    elif _in == 'Hide all read (singular & group chats)':
+        clearNotNew(int(count), ver)
+    elif _in == 'Hide all read (only singular chats)':
+        clearOldNotGroup(int(count), ver)
     else:
         print('Incorrect value\n\n')
         start()
         
-start()
+start(ver)
