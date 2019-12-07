@@ -19,8 +19,6 @@ If the dependencie**s** for the application have not ye**t** been installed on y
 
 
 ## Usage
-***PLEASE NOTE:*** This version of the script is built for Microsoft Teams running in 'Dark' mode ***ONLY***, changes are planned to implement 'Light' mode and 'High Contrast' mode.
-
 Please ensu**r**e Microsoft Teams is at `100%` zoom, **and** it is open in full-screen on your main monitor. Currently, you are unable to perform background tasks while th**i**s script is runni**n**g due to the way it imitates mouse movement and clicks.
 
 Upon start-up the application will prompt you with a **G**UI to allow you to pick which messages you want to hide (Microsoft Teams currently (12-05-2019) doesn't allow you to delete conversations like Skype for Business). The options are described below
@@ -46,7 +44,7 @@ Tons and tonnes (yes on purpose) of credit to the authors of [pyautogui](https:/
 
 
 ## Planned changes
-- [ ] Add implementation for users running MS Teams in 'Light' mode
+- [x] Add implementation for users running MS Teams in 'Light' mode
 - [ ] Improve script speed
 - [ ] Implement 'break-out' hotkey
 - [ ] Find a way to allow for background / secondary monitor activites while script runs
