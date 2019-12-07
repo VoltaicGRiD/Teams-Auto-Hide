@@ -4,7 +4,7 @@
 Python-based script made to automate the process of hiding old chat messages / conversations in Microsoft Teams.
 
 ## Dependencies
-The dependencies below are automatically downloaded if not already installed. They use `subprocess` to run a `pip install <module>` command in the background (admin credentials are not required for this, however, your IT department may have other locks / blocking tools in place to prevent this). Once all dependencies are downloaded and installed, you **may** need to restart the application for it to launch. This is due to a timing issue I'm currently working on.
+The dependencies below are automatically downloaded if not already installed. They use `subprocess` to run a `pip install <module>` command in the background (admin credentials are not required for this, however, your IT department may have other locks / blocking tools in place to prevent this). Once all dependencies are downloaded and installed, you **may** need to restart the application for it to launch. This is due to a timing issue I'm currently working on. [Issue #001](https://github.com/VoltaicGRiD/Teams-Auto-Hide/issues/1#issue-534361861)
 
 - [pyautogui](https://github.com/asweigart/pyautogui)
 - concurrent.futures
@@ -39,7 +39,7 @@ After selecting which option you'd like to perform, the application will prompt 
 ## How it works
 `pyautogui` has a built in funtion to search the screen for certain UI buttons (in this case images, you'll find the ones I used in the ImageMatches folder). This allows the tool to automatically navigate through the entries in Teams, right-click, then find the hide button. In the case of detecting group conversations, the tool will first search for a 'Leave' button within the context menu, if found, it will skip the conversation and continue on.
 
-`pyautogui` is also capable of matching a screen pixel's color to a specified one. In the case of detecting unread chat messages, the tool looks the left side of the message, where a dot is located. If the dot matches the color profile in the code, it returns that conversation as 'New', thus, skipping over it.
+`pyautogui` is also capable of matching a screen pixel's color to a specified one. In the case of detecting unread chat messages, the tool looks the left side of the conversation, where a dot is located, indicating the chat has unread messages. If the dot matches the color profile in the code, it returns that conversation as 'New', thus, skipping over it.
 
 Tons and tonnes (yes on purpose) of credit to the authors of [pyautogui](https://github.com/asweigart/pyautogui)
 
