@@ -50,7 +50,7 @@ Tons and tonnes (yes on purpose) of credit to the authors of [pyautogui](https:/
 - [ ] Improve script speed
 - [ ] Implement 'break-out' hotkey
 - [ ] Find a way to allow for background / secondary monitor activites while script runs
-
+- [ ] [Issue #002](https://github.com/VoltaicGRiD/Teams-Auto-Hide/issues/2#issue-534362157)
 
 
 ## Fun Things
